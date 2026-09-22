@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, url } from '../data/site';
+---
+
+<BaseLayout title={`Page not found — ${site.name}`} description="This page doesn't exist.">
+  <section class="lost">
+    <p class="eyebrow">404</p>
+    <h1>This page ran off with the cat.</h1>
+    <p class="sub">Whatever you were looking for isn't here — but the work still is.</p>
+    <a class="underline-link" href={url('/#work')}>back to all work</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost {
+    min-height: 62vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 620px;
+  }
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--plum);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    text-wrap: balance;
+  }
+  .sub {
+    font-size: 16px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    margin-bottom: 32px;
+  }
+</style>

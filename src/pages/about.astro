@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoScatter from '../components/PhotoScatter.astro';
+import Specimen from '../components/Specimen.astro';
+import Squiggle from '../components/Squiggle.astro';
+import { site } from '../data/site';
+
+const facts = [
+  { label: 'based in', value: 'curitiba, brazil' },
+  { label: 'currently', value: 'front-end engineer' },
+  { label: 'and', value: "a cat's favorite keyboard" },
+];
+---
+
+<BaseLayout
+  title={`About — ${site.name}`}
+  description="From veterinary medicine to front-end development — and the attention to detail that came along."
+  active="about"
+>
+  <article class="story rise-stack">
+    <Specimen text="hi, i'm nathalia" />
+
+    <p>
+      I switched from <strong>veterinary medicine</strong> to front-end development; and somehow the
+      attention to detail came with me.
+    </p>
+    <p>
+      I’ve always loved creating things and figuring out how they can work better. <strong>That curiosity naturally became part of the way I approach development.</strong>
+    </p>
+
+    <PhotoScatter group="a" />
+
+    <p>
+      Outside of work, I build my own projects from scratch, including the interfaces and visual identities. I like having the freedom to explore an idea from the first sketch all the way to something people can actually use.
+    </p>
+    <p>
+      I’m a water sign, love pop culture, was raised by the Internet and I’m probably invested in
+      some random arts and crafts project
+      <span class="tag">
+        <svg class="tag-arrow" viewBox="0 0 46 20" aria-hidden="true">
+          <path
+            d="M2 4 C 14 2, 24 14, 42 12"
+            stroke="currentColor"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M34 6 C 38 8, 41 10, 42 12 C 40 13.5, 37 15, 35 17"
+            stroke="currentColor"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+          />
+        </svg>
+        <a class="tag-text" href={site.social.instagram} target="_blank" rel="noopener noreferrer me">
+          my art on ig
+        </a>
+      </span>
+    </p>
+
+    <PhotoScatter group="b" />
+
+    <div class="divider"><Squiggle variant="a" /></div>
+
+    <dl class="facts">
+      {
+        facts.map((fact) => (
+          <div>
+            <dt>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </article>
+</BaseLayout>
+
+<style>
+  .story {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: clamp(16px, 2.5vh, 34px) var(--gutter) clamp(40px, 6vh, 90px);
+  }
+  .divider {
+    margin-top: clamp(36px, 6vh, 70px);
+  }
+  .story > p {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(20px, 3vw, 30px);
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 26px;
+  }
+  .story strong {
+    font-weight: 600;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(24px, 5vw, 40px);
+    padding-top: 30px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .facts dt {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+    transform: translateY(-4px);
+  }
+  .tag-arrow {
+    width: 34px;
+    height: 15px;
+    flex-shrink: 0;
+    color: var(--mauve);
+  }
+  .tag-text {
+    font-family: var(--font-hand);
+    font-size: clamp(16px, 2.2vw, 19px);
+    color: var(--mauve);
+    white-space: nowrap;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transform: rotate(-2deg);
+    transition: border-color 0.2s;
+  }
+  .tag-text:hover,
+  .tag-text:focus-visible {
+    border-color: var(--mauve);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tag-arrow path {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 60;
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tag-arrow path {
+        animation-name: tag-draw;
+        animation-duration: auto;
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.25, 1);
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 40% cover 42%;
+      }
+    }
+  }
+  @supports not (animation-timeline: view()) {
+    .tag-arrow path {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes tag-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

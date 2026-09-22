@@ -1,0 +1,174 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+import photoMe from '../assets/photos/01.jpeg';
+import photoShow from '../assets/photos/03.jpg';
+import photoSunset from '../assets/photos/04.jpg';
+import photoFriend from '../assets/photos/05.jpg';
+import photoDesk from '../assets/photos/07.jpeg';
+
+interface Photo {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+}
+
+const GROUPS: Record<string, Photo[]> = {
+  a: [
+    { src: photoMe, alt: 'A selfie of me in the car', caption: 'on the way' },
+    {
+      src: photoDesk,
+      alt: 'My black cat asleep on the keyboard at my desk, CSS open on the monitor behind him',
+      caption: 'from my desk',
+    },
+    { src: photoSunset, alt: 'The sun setting over the sea', caption: 'reset button' },
+  ],
+  b: [
+    { src: photoShow, alt: 'The stage at a concert, lit up in red', caption: 'saw taylor swift!!!' },
+    { src: photoFriend, alt: 'Me & my wife', caption: 'loud n proud' },
+  ],
+};
+
+interface Props {
+  /** 'a' = top group, 'b' = bottom group */
+  group?: keyof typeof GROUPS;
+}
+const { group = 'a' } = Astro.props;
+const photos = GROUPS[group] ?? [];
+
+// rotate: deg, lift: px, scale: relative size (cycles)
+const POSES = [
+  { rotate: -5.5, lift: 8, scale: 1 },
+  { rotate: 3.5, lift: -10, scale: 1.12 },
+  { rotate: -2, lift: 14, scale: 0.94 },
+  { rotate: 6, lift: -4, scale: 1.05 },
+  { rotate: -4, lift: 4, scale: 1.08 },
+];
+
+// Offset so groups don't repeat angles
+const POSE_OFFSET = group === 'b' ? 3 : 0;
+
+const cards = photos.map((photo, i) => ({
+  ...photo,
+  ...POSES[(i + POSE_OFFSET) % POSES.length],
+  z: i + 1,
+}));
+
+// Gap in photo widths
+const GAP = 0.1;
+
+// Total width in photo units; +0.05 avoids wrap from rounding
+
+const units = cards.reduce((total, card) => total + card.scale, 0) + (cards.length - 1) * GAP + 0.05;
+---
+
+{
+  cards.length > 0 && (
+    <ul class="scatter" role="list" style={`--units:${units.toFixed(2)};`}>
+      {cards.map((card) => (
+        <li
+          class="card"
+          style={`--rotate:${card.rotate}deg; --lift:${card.lift}px; --scale:${card.scale}; --z:${card.z};`}
+        >
+          <figure class="polaroid">
+            <Image
+              src={card.src}
+              alt={card.alt}
+              widths={[180, 280, 420]}
+              sizes="(max-width: 700px) 20vw, 140px"
+              loading="eager"
+              decoding="async"
+            />
+            {card.caption && <figcaption>{card.caption}</figcaption>}
+          </figure>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .scatter {
+    /* Intentionally wider than the text column */
+    --track: min(calc(100vw - 2 * var(--gutter)), 940px);
+    /* One photo width, from --units */
+    --w: clamp(48px, calc(var(--track) / var(--units)), 132px);
+    width: var(--track);
+    /* Center a track wider than its parent */
+    margin-left: calc((100% - var(--track)) / 2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: calc(var(--w) * 0.1);
+    list-style: none;
+    /* Room for rotated/lifted photos */
+    padding: calc(var(--w) * 0.14) 0 calc(var(--w) * 0.2);
+    margin-bottom: clamp(20px, 4vh, 38px);
+    /* Captions respond to the whole group's width */
+    container-type: inline-size;
+    container-name: scatter;
+  }
+
+  /* li sizes/stacks; .polaroid holds the transform */
+  .card {
+    width: calc(var(--w) * var(--scale));
+    z-index: var(--z);
+  }
+
+  .polaroid {
+    padding: calc(var(--w) * 0.05) calc(var(--w) * 0.05) calc(var(--w) * 0.17);
+    background: #fff;
+    border-radius: 3px;
+    box-shadow:
+      0 1px 2px rgba(17, 17, 17, 0.06),
+      0 8px 18px -6px rgba(17, 17, 17, 0.18);
+    transform: rotate(var(--rotate)) translateY(var(--lift));
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.35s ease;
+  }
+
+  .polaroid :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background: var(--thumb-bg);
+  }
+
+  figcaption {
+    font-family: var(--font-hand);
+    font-size: clamp(12px, calc(var(--w) * 0.11), 19px);
+    line-height: 1;
+    color: var(--muted);
+    text-align: center;
+    padding-top: calc(var(--w) * 0.05);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Hide captions when photos get too small */
+  @container scatter (max-width: 360px) {
+    figcaption {
+      display: none;
+    }
+    .polaroid {
+      padding-bottom: calc(var(--w) * 0.11);
+    }
+  }
+
+  @media (hover: hover) {
+    .card:hover {
+      z-index: 99;
+    }
+    .card:hover .polaroid {
+      transform: rotate(0deg) translateY(calc(var(--lift) - 10px)) scale(1.06);
+      box-shadow:
+        0 2px 4px rgba(17, 17, 17, 0.08),
+        0 18px 34px -10px rgba(17, 17, 17, 0.28);
+    }
+  }
+</style>

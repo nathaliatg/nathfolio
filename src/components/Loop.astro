@@ -1,0 +1,96 @@
+---
+interface Props {
+  /** 'view': draw on scroll-in; 'hover': on parent hover */
+  draw?: 'view' | 'hover';
+  color?: string;
+}
+const { draw = 'view', color } = Astro.props;
+---
+
+<span class:list={['loop', `draw-${draw}`]} style={color ? `--loop-ink:${color}` : undefined}>
+  <span class="loop-text"><slot /></span>
+  <svg viewBox="0 0 120 44" preserveAspectRatio="none" aria-hidden="true">
+    <path
+      d="M104 13 C 106 4, 70 1, 46 3 S 5 12, 4 23 S 38 41, 70 39 S 116 30, 112 18 S 84 7, 62 8"
+    ></path>
+  </svg>
+</span>
+
+<style>
+  .loop {
+    position: relative;
+    display: inline-block;
+    /* Room to draw without shifting layout */
+    padding: 0.5em 0.75em 0.85em;
+    margin: -0.5em -0.75em -0.85em;
+  }
+  .loop-text {
+    position: relative;
+    z-index: 1;
+  }
+  .loop svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .loop path {
+    fill: none;
+    stroke: var(--loop-ink, var(--mauve));
+    stroke-width: 2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    /* Longer than the path length */
+    stroke-dasharray: 330;
+    stroke-dashoffset: 330;
+  }
+
+  /* in-view is set by the script below */
+  .draw-view path {
+    transition: stroke-dashoffset 0.7s cubic-bezier(0.6, 0.05, 0.25, 1);
+  }
+  .draw-view.in-view path {
+    stroke-dashoffset: 0;
+  }
+
+  .draw-hover path {
+    transition: stroke-dashoffset 0.7s cubic-bezier(0.6, 0.05, 0.25, 1);
+  }
+  :global(a:hover) .draw-hover path,
+  :global(a:focus-visible) .draw-hover path {
+    stroke-dashoffset: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loop path {
+      stroke-dashoffset: 0;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const loops = document.querySelectorAll<HTMLElement>('.loop.draw-view');
+
+  if (loops.length) {
+    if (reduced) {
+      loops.forEach((loop) => loop.classList.add('in-view'));
+    } else {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              observer.unobserve(entry.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -15% 0px', threshold: 0.6 }
+      );
+      loops.forEach((loop) => observer.observe(loop));
+    }
+  }
+</script>

@@ -1,0 +1,271 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+import { url } from '../data/site';
+
+interface Props {
+  project: Project;
+  span: number;
+  spanMd: number;
+  stagger?: boolean;
+  nudgeUp?: boolean;
+  eager?: boolean;
+}
+const { project, span, spanMd, stagger = false, nudgeUp = false, eager = false } = Astro.props;
+const { card } = project;
+const href = project.study ? url(`/work/${project.slug}`) : undefined;
+const Tag = href ? 'a' : 'div';
+
+// Full-bleed shots take the image's own shape, so nothing is cropped or padded.
+const ratio = card.fit === 'contain-full' && card.image ? card.image.width / card.image.height : null;
+---
+
+<Tag
+  class:list={['card', 'rise', { 'is-link': href, stagger, 'rise-2': stagger, 'nudge-up': nudgeUp }]}
+  href={href}
+  data-card
+  style={`--span:${span}; --span-md:${spanMd}; --cover:${card.cover}; --reveal-ink:${card.revealInk ?? '#fdf0e8'};${ratio ? ` --ratio:${ratio.toFixed(4)};` : ''}`}
+  aria-label={href ? `${project.name} — read the case study` : undefined}
+>
+  <div class:list={['thumb', { ratio }]} data-fx style={card.bg ? `background:${card.bg}` : undefined}>
+    {
+      card.image && (
+        <Image
+          src={card.image}
+          alt=""
+          class:list={['shot', `fit-${card.fit ?? 'cover'}`]}
+          widths={[320, 480, 640, 900, 1200]}
+          sizes="(max-width: 640px) 92vw, (max-width: 1023px) 46vw, min(50vw, 720px)"
+          loading={eager ? 'eager' : 'lazy'}
+          decoding={eager ? 'sync' : 'async'}
+          fetchpriority={eager ? 'high' : 'auto'}
+        />
+      )
+    }
+
+    {card.wordmark && <span class="wordmark" style={`color:${card.wordmark.color}`}>{card.wordmark.text}</span>}
+
+    {card.badge && <span class:list={['badge', card.badge.tone]}>{card.badge.label}</span>}
+
+    <span class="cover" aria-hidden="true"></span>
+
+    <div class="reveal">
+      <p class="rdesc">{card.blurb}</p>
+    </div>
+  </div>
+
+  <div class="caption">
+    <p class="cap-name">{project.name}</p>
+    <p class="cap-role">{card.role}</p>
+  </div>
+</Tag>
+
+<style>
+  .card {
+    grid-column: span 1;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card.is-link {
+    cursor: pointer;
+  }
+  @media (min-width: 640px) {
+    .card { grid-column: span var(--span-md); }
+  }
+  @media (min-width: 1024px) {
+    .card { grid-column: span var(--span); }
+  }
+
+  .thumb {
+    position: relative;
+    background: var(--thumb-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: clamp(200px, 36vw, 300px);
+  }
+  @media (min-width: 1024px) {
+    .thumb {
+      height: clamp(280px, 29vw, 420px);
+    }
+  }
+  /* shaped by the image instead of a fixed height */
+  .thumb.ratio {
+    height: auto;
+    aspect-ratio: var(--ratio);
+  }
+
+  .shot {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  /* Image parallax inside the card (cover images only) */
+  @media (prefers-reduced-motion: no-preference) {
+    .shot.fit-cover {
+      height: 124%;
+      /* Fallback driven by --p from BaseLayout script */
+      transform: translateY(calc(-19.35% * (1 - var(--p, 0.5))));
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      /* Named timeline: .thumb is a scroll container */
+      .thumb {
+        view-timeline-name: --thumb-view;
+      }
+      .shot.fit-cover {
+        animation-name: shot-parallax;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --thumb-view;
+        animation-range: cover;
+      }
+    }
+  }
+  /* -19.35% = 24/124, the image overflow */
+  @keyframes shot-parallax {
+    from {
+      transform: translateY(-19.35%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+
+  .shot.fit-cover {
+    object-fit: cover;
+    /* keep left side visible on narrow screens */
+    object-position: left center;
+  }
+  @media (min-width: 1024px) {
+    .shot.fit-cover {
+      object-position: center;
+    }
+  }
+  .shot.fit-contain {
+    object-fit: contain;
+    width: 60%;
+    height: auto;
+    max-height: 70%;
+  }
+  .shot.fit-contain-full {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(22px, 2.6vw, 36px);
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 3;
+    background: #fff;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .badge.soon {
+    color: #b8327a;
+  }
+  .badge.course {
+    color: var(--muted);
+  }
+
+  .cover {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 340%;
+    height: 340%;
+    border-radius: 50%;
+    background: var(--cover);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(18px, 3vw, 26px);
+    opacity: 0;
+    transition: opacity 0.3s 0.15s;
+  }
+  .reveal .rdesc {
+    font-size: clamp(14px, 1.3vw, 16.5px);
+    color: var(--reveal-ink);
+    line-height: 1.6;
+    max-width: 34ch;
+  }
+
+  .card:focus-visible .cover,
+  .card.is-open .cover {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .card:focus-visible .reveal,
+  .card.is-open .reveal {
+    opacity: 1;
+  }
+  @media (hover: hover) {
+    .card:hover .cover {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .card:hover .reveal {
+      opacity: 1;
+    }
+  }
+
+  .caption {
+    padding: 16px 2px 0;
+  }
+  .cap-name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(19px, 1.7vw, 22px);
+    margin-bottom: 5px;
+    transition: font-weight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card:focus-visible .cap-name,
+  .card.is-open .cap-name {
+    font-weight: 650;
+  }
+  @media (hover: hover) {
+    .card:hover .cap-name {
+      font-weight: 650;
+    }
+  }
+  .cap-role {
+    font-size: 12.5px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  @media (min-width: 1024px) {
+    .card.stagger {
+      margin-top: clamp(24px, 3vw, 44px);
+    }
+    /* rides up into the row gap */
+    .card.nudge-up {
+      margin-top: calc(-1 * clamp(16px, 2.2vw, 34px));
+    }
+  }
+</style>

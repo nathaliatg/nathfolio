@@ -1,0 +1,110 @@
+---
+import Loop from './Loop.astro';
+import Squiggle from './Squiggle.astro';
+import { site, url } from '../data/site';
+
+const line =
+  'I learned HTML so my Tumblr blog would look cute. Nobody warned me that was a career path.';
+
+// Only one link should get the loop
+const socials = [
+  { label: 'GitHub', href: site.social.github, loop: false },
+  { label: 'LinkedIn', href: site.social.linkedin, loop: true },
+].filter((s) => s.href);
+---
+
+<div class="divider"><Squiggle variant="b" /></div>
+
+<aside class="personal rise-stack">
+  <p class="eyebrow">off the clock</p>
+  <p class="line">{line}</p>
+
+  <div class="links">
+    <a class="story" href={url('/about')}>the longer version <span aria-hidden="true">→</span></a>
+    {
+      socials.length > 0 && (
+        <ul class="socials">
+          {socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer me">
+                {s.loop ? <Loop>{s.label}</Loop> : s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</aside>
+
+<style>
+  .divider {
+    margin-top: clamp(56px, 11vh, 140px);
+  }
+  .personal {
+    padding-top: clamp(40px, 7vh, 90px);
+    /* Room below the loop so it isn't clipped */
+    padding-bottom: clamp(18px, 3vh, 32px);
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--plum);
+    margin-bottom: 18px;
+  }
+  .line {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(21px, 3vw, 30px);
+    line-height: 1.45;
+    max-width: 640px;
+    text-wrap: balance;
+  }
+
+  .links {
+    display: flex;
+    align-items: baseline;
+    gap: 14px 28px;
+    flex-wrap: wrap;
+    margin-top: clamp(26px, 4vh, 40px);
+  }
+  .story {
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 3px;
+  }
+
+  .socials {
+    display: flex;
+    align-items: baseline;
+    /* Wide gap for the loop overflow */
+    gap: 38px;
+    list-style: none;
+    font-size: 13px;
+  }
+  .socials::before {
+    content: '';
+    align-self: center;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--line);
+    margin-right: 8px;
+  }
+  @media (max-width: 520px) {
+    .socials::before {
+      display: none;
+    }
+  }
+  .socials a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .socials a:hover {
+    color: var(--plum);
+  }
+</style>

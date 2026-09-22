@@ -1,0 +1,218 @@
+---
+import { Image } from 'astro:assets';
+import Squiggle from './Squiggle.astro';
+import lumiBlog from '../assets/lumimeds-blog.png';
+import lumiMenu from '../assets/lumimeds-menu.png';
+import { url } from '../data/site';
+---
+
+<div class="current">
+  <div class="divider"><Squiggle variant="a" /></div>
+
+  <div class="section-head rise-stack">
+    <h2>what i'm up to</h2>
+    <span class="badge"><span class="dot" aria-hidden="true"></span>current work</span>
+  </div>
+
+  <div class="current-row">
+    <div class="frame">
+      <div class="shot shot-blog">
+        <Image
+          src={lumiBlog}
+          alt="The LumiMeds blog, with an article about NAD+"
+          widths={[300, 460, 620]}
+          sizes="(max-width: 900px) 52vw, 30vw"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="shot shot-menu">
+        <Image
+          src={lumiMenu}
+          alt="The LumiMeds treatments menu open on a laptop"
+          widths={[420, 640, 900, 1252]}
+          sizes="(max-width: 900px) 62vw, 36vw"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <div class="copy rise-stack">
+      <p class="name">LumiMeds</p>
+      <p class="desc">
+        I'm a front-end engineer at LumiMeds, working alongside an amazing design team to improve
+        the healthcare experience for patients and providers.
+      </p>
+      <p class="note">
+        Front-end only here — the design is the team's, and they're very good at it.
+      </p>
+      <a class="more" href={url('/lumimeds')}>
+        how I work here <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .current {
+    margin-top: clamp(56px, 11vh, 140px);
+  }
+  .divider {
+    margin-bottom: clamp(56px, 11vh, 140px);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--plum);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.35;
+      transform: scale(0.75);
+    }
+  }
+
+  .current-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(28px, 4vw, 56px);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .current-row {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: clamp(40px, 5vw, 76px);
+    }
+  }
+
+  .frame {
+    position: relative;
+    /* Tuned to the two image sizes */
+    aspect-ratio: 8 / 5;
+    max-width: 100%;
+  }
+
+  .shot {
+    position: absolute;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--paper);
+    box-shadow:
+      0 1px 2px rgba(17, 17, 17, 0.05),
+      0 14px 34px -20px rgba(17, 17, 17, 0.4);
+  }
+  .shot-blog {
+    width: 46%;
+    left: 0;
+    top: 0;
+    z-index: 1;
+  }
+  /* No frame: the mockup image has its own shadow */
+  .shot-menu {
+    width: 56%;
+    right: 0;
+    top: 30%;
+    z-index: 2;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 10px;
+  }
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .shot-blog {
+      animation: floatA 7s ease-in-out infinite alternate;
+    }
+    .shot-menu {
+      animation: floatB 7s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes floatA {
+    to {
+      transform: translateY(-11px);
+    }
+  }
+  @keyframes floatB {
+    to {
+      transform: translateY(9px);
+    }
+  }
+
+  /* Scroll-driven drift where supported */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .frame {
+        /* Longhands: the shorthand resets duration to 0s */
+        animation-name: drift;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+      }
+    }
+  }
+  @keyframes drift {
+    from {
+      transform: translateY(16px);
+    }
+    to {
+      transform: translateY(-16px);
+    }
+  }
+
+  .copy {
+    max-width: 38ch;
+  }
+  .name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(22px, 3vw, 28px);
+    margin-bottom: 14px;
+  }
+  .desc {
+    font-size: 15px;
+    color: var(--ink-3);
+    line-height: 1.7;
+    margin-bottom: 18px;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .more {
+    display: inline-block;
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 3px;
+  }
+</style>

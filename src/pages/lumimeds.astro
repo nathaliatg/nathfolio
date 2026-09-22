@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CaseStudy from '../components/CaseStudy.astro';
+import lumimeds from '../assets/lumimeds-menu.png';
+import { site } from '../data/site';
+
+// Current job — kept out of `projects` so it stays off the grid.
+const study = {
+  eyebrow: 'current work',
+  title: 'LumiMeds',
+  tagline:
+    "I'm a front-end engineer working on a healthcare product used by patients and providers. I work closely with the existing designs to turn them into responsive, functional interfaces, and make adjustments along the way when something doesn't quite translate from design to code.",
+  meta: {
+    role: 'Front-end engineering',
+    stack: 'TypeScript, React',
+    type: 'Full-time role',
+  },
+  links: {
+    live: '',
+  },
+  hero: {
+    image: lumimeds,
+    bg: '#fafaf8',
+    fit: 'cover' as const,
+    alt: 'The LumiMeds site and blog on a laptop',
+    video: { mp4: '/videos/Lumi.mp4' },
+  },
+  blocks: [
+    {
+      label: 'what I do',
+      heading: 'Building interfaces that work beyond the happy path.',
+      body: [
+        'A lot of my day-to-day work is turning designs into real, working interfaces: from new pages and forms to improvements and fixes across the product.',
+        "That also means dealing with the things that aren't always visible in a design file: different screen sizes, loading states, empty results, errors, long text and the occasional thing that behaves very differently once it's actually in the browser.",
+        'Working on a healthcare product has made me pay more attention to those details. Even small interface decisions can make a difference when someone is trying to understand information or complete something important.',
+      ],
+    },
+    {
+      label: 'working with design',
+      heading: 'Bringing the design into the browser, and figuring out what happens along the way.',
+      body: [
+        "I work with the design team to implement their work as closely as possible, while also figuring out the details that don't always make it into a Figma file.",
+        "Sometimes that's a small spacing adjustment. Sometimes it's figuring out how a component should behave when there's no data or when the content is longer than expected.",
+        "I've also learned that it's much easier to talk about those things early than to discover them after everything has already been built.",
+      ],
+      features: [
+        {
+          name: 'Design fidelity',
+          text: 'Comparing the implementation with the original design and fixing the little details that get lost between Figma and code.',
+        },
+        {
+          name: 'Responsive interfaces',
+          text: 'Making sure pages and components work across different screen sizes, rather than only matching the original design dimensions.',
+        },
+        {
+          name: 'Accessibility',
+          text: 'Keeping keyboard navigation, contrast and other accessibility considerations in mind while building.',
+        },
+        {
+          name: 'Collaboration',
+          text: 'Working with designers and other developers to clarify requirements, discuss implementation and catch issues before they become bigger problems.',
+        },
+      ],
+    },
+    {
+      label: 'tech',
+      stack: ['TypeScript', 'React', 'Component libraries', 'Accessibility'],
+    },
+  ],
+};
+---
+
+<BaseLayout title={`LumiMeds — ${site.name}`} description={study.tagline} backLink>
+  <CaseStudy
+    eyebrow={study.eyebrow}
+    title={study.title}
+    tagline={study.tagline}
+    meta={study.meta}
+    links={study.links}
+    hero={study.hero}
+    blocks={study.blocks}
+  >
+    <div class="opener">
+    </div>
+  </CaseStudy>
+</BaseLayout>
+
+<style>
+  .opener {
+    max-width: var(--maxw-read);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+</style>

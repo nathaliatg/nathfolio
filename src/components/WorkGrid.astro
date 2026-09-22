@@ -1,0 +1,74 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import { visibleProjects } from '../data/projects';
+import { layoutRows } from '../lib/grid';
+
+const COLS = 12;
+const wanted = visibleProjects.map((p) => p.card.span);
+const lg = layoutRows(wanted, COLS);
+// tablet: spans over half a row become full width
+const md = layoutRows(
+  wanted.map((span) => (span > COLS / 2 ? 2 : 1)),
+  2
+);
+---
+
+<div class="grid">
+  {
+    visibleProjects.map((project, i) => (
+      <ProjectCard
+        project={project}
+        span={lg[i]!.span}
+        spanMd={md[i]!.span}
+        stagger={lg[i]!.col % 2 === 1}
+        nudgeUp={project.card.nudgeUp}
+        eager={i === 0}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(28px, 3.4vw, 44px);
+    align-items: start;
+  }
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(12, 1fr);
+    }
+  }
+</style>
+
+<script>
+  // Touch: first tap opens the card, second tap navigates
+  const noHover = window.matchMedia('(hover: none)');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-card]'));
+
+  const closeAll = (except?: HTMLElement) => {
+    for (const card of cards) if (card !== except) card.classList.remove('is-open');
+  };
+
+  for (const card of cards) {
+    card.addEventListener('click', (event) => {
+      if (!noHover.matches) return;
+      if (card.classList.contains('is-open')) return;
+      event.preventDefault();
+      closeAll(card);
+      card.classList.add('is-open');
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    if (!(event.target as Element).closest('[data-card]')) closeAll();
+  });
+
+  noHover.addEventListener('change', () => closeAll());
+</script>

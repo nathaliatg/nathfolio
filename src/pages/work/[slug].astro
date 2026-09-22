@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+import { studies, nextStudy, type Project } from '../../data/projects';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return studies.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const study = project.study!;
+const next = nextStudy(project.slug);
+---
+
+<BaseLayout title={`${project.name} — ${site.name}`} description={study.tagline} backLink>
+  <CaseStudy
+    eyebrow={study.eyebrow}
+    title={project.name}
+    tagline={study.tagline}
+    meta={study.meta}
+    links={study.links}
+    hero={{ ...study.hero, image: project.card.image }}
+    blocks={study.blocks}
+    next={{ slug: next.slug, name: next.name }}
+  />
+</BaseLayout>

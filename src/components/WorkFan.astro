@@ -1,0 +1,166 @@
+---
+import { Image } from 'astro:assets';
+import petmatchHero from '../assets/tiles/petmatch-hero.png';
+import petmatchPhoto from '../assets/tiles/petmatch-photo.png';
+import safeMark from '../assets/tiles/safe-mark.png';
+import artsyScreen from '../assets/tiles/artsy-screen.png';
+import lumimedsScreen from '../assets/tiles/lumimeds-screen.png';
+import catFace from '../assets/tiles/cat-face.png';
+
+const tiles = [
+  { src: petmatchHero, alt: 'PetMatch landing page' },
+  { src: safeMark, alt: 'The safe wordmark' },
+  { src: artsyScreen, alt: 'The Artsy workshop platform' },
+  { src: catFace, alt: 'A cat I drew' },
+  { src: lumimedsScreen, alt: 'The LumiMeds interface' },
+  { src: petmatchPhoto, alt: 'A PetMatch adoption photo' },
+];
+
+const SPREAD = 13; // total rotation spread, degrees
+const ARC = 16; // edge drop, px
+
+const cards = tiles.map((tile, i) => {
+  // t: -1 (first card) to 1 (last)
+  const t = tiles.length === 1 ? 0 : (i / (tiles.length - 1)) * 2 - 1;
+  return {
+    ...tile,
+    t: t.toFixed(3),
+    rotate: (t * SPREAD).toFixed(2),
+    lift: (t * t * ARC).toFixed(1),
+    z: i + 1,
+  };
+});
+---
+
+<ul class="fan" role="list" data-fx>
+  {
+    cards.map((card) => (
+      <li
+        class:list={['card', 'rise', `rise-${(card.z % 3) + 1}`]}
+        style={`--rotate:${card.rotate}deg; --lift:${card.lift}px; --z:${card.z}; --t:${card.t};`}
+      >
+        <span class="spread">
+        <span class="face">
+        <Image
+          src={card.src}
+          alt={card.alt}
+          widths={[160, 240, 440]}
+          sizes="(max-width: 640px) 22vw, 130px"
+          loading="lazy"
+          decoding="async"
+        />
+        </span>
+        </span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .fan {
+    margin-bottom: clamp(8px, 2vh, 20px);
+    --w: clamp(70px, 9.4vw, 128px);
+    display: flex;
+    list-style: none;
+    padding: 30px 0 clamp(44px, 6vh, 66px);
+    /* room for rotated cards */
+    margin-left: calc(var(--w) * 0.06);
+  }
+
+  /* li: entry animation; .spread: fan-open; .face: rotation/hover */
+  .card {
+    position: relative;
+    width: var(--w);
+    z-index: var(--z);
+  }
+  .spread {
+    display: block;
+    will-change: transform;
+  }
+
+  /* Fallback driven by --p from BaseLayout script */
+  @media (prefers-reduced-motion: no-preference) {
+    .fan {
+      --open: clamp(0, (var(--p, 0) - 0.3) / 0.3, 1);
+      /* cards fan out both ways, so shift right to keep the deck left-aligned */
+      transform: translateX(calc(var(--w) * var(--open)));
+    }
+    .spread {
+      transform: translateX(calc(var(--t) * var(--w) * 1 * var(--open)));
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .fan,
+      .spread {
+        animation-duration: auto;
+        animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 25% cover 45%;
+      }
+      .fan {
+        animation-name: fan-shift;
+      }
+      .spread {
+        animation-name: fan-open;
+      }
+    }
+  }
+  @keyframes fan-open {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(var(--t) * var(--w) * 1));
+    }
+  }
+  @keyframes fan-shift {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(var(--w));
+    }
+  }
+
+
+  .face {
+    display: block;
+    aspect-ratio: 4 / 5;
+    border-radius: 7px;
+    background: #fff;
+    padding: 4px;
+    box-shadow:
+      0 1px 2px rgba(17, 17, 17, 0.06),
+      0 8px 18px -6px rgba(17, 17, 17, 0.18);
+    transform: rotate(var(--rotate)) translateY(var(--lift));
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.35s ease;
+  }
+  .card + .card {
+    margin-left: calc(var(--w) * -0.7);
+  }
+
+  .face :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  @media (hover: hover) {
+    .card:hover {
+      z-index: 99;
+    }
+    .card:hover .face {
+      transform: rotate(0deg) translateY(calc(var(--lift) - 12px)) scale(1.08);
+      box-shadow:
+        0 2px 4px rgba(17, 17, 17, 0.08),
+        0 18px 34px -10px rgba(17, 17, 17, 0.28);
+    }
+  }
+</style>

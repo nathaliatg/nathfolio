@@ -1,0 +1,104 @@
+---
+interface Props {
+  title: string;
+  repeat?: number;
+  /** seconds per loop */
+  duration?: number;
+}
+const { title, repeat = 5, duration = 26 } = Astro.props;
+const items = Array.from({ length: repeat });
+---
+
+<div class="marquee-wrap">
+  <h2 class="sr-only">{title}</h2>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      {/* two copies for a seamless loop */}
+      {
+        [0, 1].map(() => (
+          <ul class="run" style={`--dur:${duration}s`}>
+            {items.map(() => (
+              <li>
+                {title}
+                <span class="star">✦</span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee-wrap {
+    /* full-bleed */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    border-block: 1px solid var(--line);
+    padding-block: 12px;
+    margin-bottom: clamp(28px, 5vh, 56px);
+    overflow: hidden;
+  }
+  .marquee {
+    overflow: hidden;
+  }
+  .track {
+    display: flex;
+    width: max-content;
+  }
+  .run {
+    display: flex;
+    align-items: center;
+    gap: clamp(26px, 4vw, 48px);
+    padding-right: clamp(26px, 4vw, 48px);
+    list-style: none;
+    animation: slide var(--dur) linear infinite;
+  }
+  .run li {
+    display: flex;
+    align-items: center;
+    gap: clamp(26px, 4vw, 48px);
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(18px, 2.2vw, 26px);
+    font-variation-settings: 'WONK' 1;
+    color: var(--ink-2);
+  }
+  .star {
+    color: var(--butter-ink);
+    font-size: 0.7em;
+    transform: translateY(-0.08em);
+  }
+
+  @keyframes slide {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Reduced motion: hide marquee, show the h2 */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      display: none;
+    }
+    .marquee-wrap {
+      border: 0;
+      padding-block: 0;
+    }
+    .sr-only {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: clamp(26px, 4vw, 34px);
+    }
+  }
+</style>

@@ -1,0 +1,167 @@
+---
+// Separate family name avoids clashing with fontsource's Fraunces
+import frauncesFull from '@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url';
+
+const fontFace = `@font-face{
+  font-family:'Fraunces Specimen';
+  src:url(${frauncesFull}) format('woff2-variations');
+  font-weight:100 900;
+  font-display:swap;
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+2122;
+}`;
+
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+
+interface Axis {
+  tag: 'opsz' | 'wght' | 'SOFT' | 'WONK';
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+}
+
+// No WONK slider: the text has no g/y/j, so it does nothing
+const AXES: Axis[] = [
+  { tag: 'opsz', label: 'optical size', min: 9, max: 144, step: 1, value: 96 },
+  { tag: 'wght', label: 'weight', min: 100, max: 900, step: 10, value: 500 },
+  { tag: 'SOFT', label: 'softness', min: 0, max: 100, step: 1, value: 20 },
+];
+
+const CONSTANT = `'WONK' 1`;
+
+const initial = [...AXES.map((axis) => `'${axis.tag}' ${axis.value}`), CONSTANT].join(', ');
+---
+
+<style is:global set:html={fontFace}></style>
+
+<section class="specimen">
+  <p class="star" aria-hidden="true">✦</p>
+
+  <h1 class="word" id="specimen-word" style={`font-variation-settings:${initial};`}>{text}</h1>
+
+  <div class="controls">
+    {
+      AXES.map((axis) => (
+        <div class="axis">
+          <label for={`axis-${axis.tag}`}>
+            {axis.label}
+            <b data-out={axis.tag}>{axis.value}</b>
+          </label>
+          <input
+            type="range"
+            id={`axis-${axis.tag}`}
+            data-axis={axis.tag}
+            min={axis.min}
+            max={axis.max}
+            step={axis.step}
+            value={axis.value}
+          />
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="note">go on, drag them</p>
+</section>
+
+<script>
+  const word = document.getElementById('specimen-word');
+  const sliders = document.querySelectorAll<HTMLInputElement>('[data-axis]');
+
+  if (word && sliders.length) {
+    const apply = () => {
+      const fromSliders = Array.from(sliders).map(
+        (slider) => `'${slider.dataset.axis}' ${slider.value}`
+      );
+      word.style.fontVariationSettings = [...fromSliders, "'WONK' 1"].join(', ');
+    };
+
+    sliders.forEach((slider) => {
+      const out = document.querySelector(`[data-out="${slider.dataset.axis}"]`);
+      slider.addEventListener('input', () => {
+        if (out) out.textContent = slider.value;
+        apply();
+      });
+    });
+  }
+</script>
+
+<style>
+  .specimen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(16px, 3vh, 26px);
+    margin-bottom: clamp(40px, 7vh, 80px);
+  }
+
+  .star {
+    color: var(--butter-ink);
+    font-size: 15px;
+    line-height: 1;
+    margin-bottom: -6px;
+  }
+
+  .word {
+    font-family: 'Fraunces Specimen', var(--font-display);
+    font-size: clamp(34px, 9vw, 74px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 14px clamp(18px, 4vw, 34px);
+    width: 100%;
+    max-width: 480px;
+  }
+  .axis {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .axis label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .axis label b {
+    font-weight: 500;
+    color: var(--plum);
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type='range'] {
+    width: 100%;
+    height: 22px;
+    accent-color: var(--mauve);
+    cursor: grab;
+  }
+  input[type='range']:active {
+    cursor: grabbing;
+  }
+  input[type='range']:focus-visible {
+    outline: 2px solid var(--plum);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .note {
+    font-family: var(--font-hand);
+    font-size: clamp(17px, 2.4vw, 20px);
+    color: var(--mauve);
+    transform: rotate(-1.5deg);
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+import { site, url } from '../data/site';
+
+interface Props {
+  active?: 'work' | 'about' | 'contact';
+  backLink?: boolean;
+}
+const { active, backLink = false } = Astro.props;
+
+// data-label reserves hover width (see global.css)
+const links = [
+  { href: url('/#work'), label: 'work', key: 'work' },
+  { href: url('/about'), label: 'about', key: 'about' },
+  { href: url('/#closing'), label: 'contact', key: 'contact' },
+] as const;
+---
+
+<header class="site-header">
+  <a href={url('/')} class="mark" aria-label={`${site.mark} — ${site.name}, home`}>{site.mark}</a>
+  <nav aria-label="Main">
+    {
+      backLink ? (
+        <a href={url('/#work')} class="back" data-label="back to work">
+          <span class="label">
+            <span class="arrow" aria-hidden="true">
+              ←
+            </span>{' '}
+            back to work
+          </span>
+        </a>
+      ) : (
+        <a
+          href={links[0].href}
+          data-label={links[0].label}
+          aria-current={active === 'work' ? 'page' : undefined}
+        >
+          <span class="label">{links[0].label}</span>
+        </a>
+      )
+    }
+    {
+      links.slice(1).map((link) => (
+        <a
+          href={link.href}
+          data-label={link.label}
+          aria-current={active === link.key ? 'page' : undefined}
+        >
+          <span class="label">{link.label}</span>
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+<style>
+  .back .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  /* Keep arrow weight fixed on hover */
+  .back .arrow {
+    font-variation-settings: 'wght' 400;
+  }
+</style>

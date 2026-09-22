@@ -1,0 +1,337 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorkGrid from '../components/WorkGrid.astro';
+import WorkMarquee from '../components/WorkMarquee.astro';
+import CurrentWork from '../components/CurrentWork.astro';
+import PersonalNote from '../components/PersonalNote.astro';
+import CatEasterEgg from '../components/CatEasterEgg.astro';
+import WorkFan from '../components/WorkFan.astro';
+import { site } from '../data/site';
+
+const headline = ['I', 'build', 'things', 'that', 'look', 'as', 'good', 'as', 'they', 'work.'];
+const skills = [
+  'Front-end development',
+  'React & Angular',
+  'TypeScript',
+  'Accessibility',
+  'UI design',
+  'Illustration',
+  'Prototyping',
+];
+---
+
+<BaseLayout title={`${site.name} — front-end dev & visual designer`} active="work">
+  <section id="hero">
+    <p class="eyebrow">{site.name.toLowerCase()}</p>
+
+    <h1>
+      {
+        headline.map((word, i) => (
+          <Fragment>
+            {i > 0 && ' '}
+            {word === 'look' ? (
+              <span class="word scribble" data-w="look">
+                <span class="w-in">look</span>
+                <svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true">
+                  <path
+                    d="M2 8 Q40 2 80 8 T160 8 T240 8 T298 6"
+                    stroke="#6B3450"
+                    stroke-width="3"
+                    fill="none"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+            ) : (
+              <span class="word" data-w={word}>
+                <span class="w-in">{word}</span>
+              </span>
+            )}
+          </Fragment>
+        ))
+      }
+    </h1>
+
+    <p class="sub">
+      A developer who never stopped thinking like a designer; combining thoughtful interfaces with
+      clean, purposeful code.
+    </p>
+
+    <div class="hero-foot">
+      <span>{site.location} — {site.year}</span>
+      <span class="role">
+        selected work
+        <svg class="hero-arrow" viewBox="0 0 24 40" aria-hidden="true">
+          <path
+            d="M12 2 C 18 11, 5 20, 11 34"
+            stroke="currentColor"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 25 C 6 29, 8 32, 11 34 C 13 31, 16 28, 19 26"
+            stroke="currentColor"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+    </div>
+  </section>
+
+  <section id="work">
+    <WorkMarquee title="selected work" />
+    <p class="work-note rise">designed &amp; built solo</p>
+
+    <WorkGrid />
+    <CurrentWork />
+    <PersonalNote />
+  </section>
+
+  <section id="closing">
+    <p class="lead rise">
+      I've got your back with digital interfaces that feel <em>as good as they look</em> — designed
+      with real people in mind, and built to actually ship.
+    </p>
+
+    <WorkFan />
+
+    <div class="pill-list skills rise rise-2">
+      {skills.map((skill) => <span>{skill}</span>)}
+    </div>
+
+    <div class="cta rise-stack">
+      <h2>Think we'd work well together?</h2>
+      <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+      <p class="aside">get ready for some scroll-stopping work</p>
+      <CatEasterEgg />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- hero ---------- */
+  #hero {
+    min-height: min(82vh, 760px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--plum);
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(34px, 6.4vw, 84px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 920px;
+    text-wrap: balance;
+  }
+  /* Hidden bold copy reserves width so hover doesn't reflow */
+  .word {
+    display: inline-grid;
+    transition:
+      transform 0.25s ease,
+      font-weight 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .word > .w-in {
+    grid-area: 1 / 1;
+  }
+  .word::after {
+    content: attr(data-w);
+    grid-area: 1 / 1;
+    font-weight: 700;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .word:hover {
+      transform: rotate(-3deg) translateY(-3px);
+      font-weight: 700;
+    }
+  }
+  .scribble {
+    position: relative;
+  }
+  .scribble svg {
+    position: absolute;
+    left: 0;
+    bottom: -0.12em;
+    width: 100%;
+    height: 0.17em;
+    overflow: visible;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .scribble path {
+      stroke-dasharray: 320;
+      animation: scribble-draw 0.9s 0.4s cubic-bezier(0.6, 0.05, 0.25, 1) both;
+    }
+  }
+  @keyframes scribble-draw {
+    from {
+      stroke-dashoffset: 320;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .sub {
+    font-size: 16px;
+    color: var(--ink-2);
+    margin-top: 30px;
+    max-width: 440px;
+    line-height: 1.65;
+  }
+  .hero-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: clamp(48px, 10vh, 120px);
+    padding-bottom: 30px;
+  }
+  .hero-foot .role {
+    position: relative;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .hero-arrow {
+    position: absolute;
+    top: 100%;
+    right: 6px;
+    margin-top: 4px;
+    width: 18px;
+    height: 30px;
+    color: var(--mauve);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-arrow path {
+      stroke-dasharray: 70;
+      animation: scribble-draw-v 0.8s 0.9s cubic-bezier(0.6, 0.05, 0.25, 1) both;
+    }
+  }
+  @keyframes scribble-draw-v {
+    from {
+      stroke-dashoffset: 70;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      #hero > * {
+        animation-name: hero-out;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 90%;
+      }
+    }
+  }
+  @keyframes hero-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0.15;
+      transform: translateY(-26px);
+    }
+  }
+
+  /* ---------- work ---------- */
+  #work {
+    padding-bottom: 0;
+    background: linear-gradient(to bottom, var(--paper) 0%, var(--paper) 85%, var(--paper-2) 100%);
+  }
+
+  .work-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: clamp(28px, 5vh, 56px);
+  }
+
+  /* ---------- closing ---------- */
+  #closing {
+    background: var(--paper-2);
+    padding-top: clamp(80px, 14vh, 180px);
+  }
+  .lead {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(22px, 3.4vw, 36px);
+    line-height: 1.4;
+    max-width: 640px;
+    margin-bottom: clamp(20px, 3vh, 34px);
+  }
+  .lead em {
+    font-style: italic;
+    color: var(--plum);
+  }
+  .skills {
+    margin-bottom: clamp(56px, 10vh, 120px);
+  }
+
+  .cta {
+    text-align: center;
+  }
+  .cta h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(28px, 5vw, 56px);
+    margin-bottom: 28px;
+    text-wrap: balance;
+    transition: font-weight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (hover: hover) {
+    .cta:hover h2 {
+      font-weight: 650;
+    }
+  }
+
+  .aside {
+    font-family: var(--font-hand);
+    font-size: clamp(17px, 2.4vw, 21px);
+    line-height: 1.2;
+    color: var(--mauve);
+    transform: rotate(-1.5deg);
+    margin-bottom: 14px;
+  }
+  .aside-star {
+    color: var(--butter-ink);
+    font-size: 15px;
+    line-height: 1;
+    margin-bottom: 34px;
+  }
+  .mail {
+    display: inline-block;
+    font-size: clamp(14px, 3vw, 15px);
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 3px;
+    text-decoration: none;
+    margin-bottom: 20px;
+    word-break: break-word;
+  }
+  .cta :global(.cat-trigger) {
+    display: block;
+    margin: 0 auto;
+  }
+</style>
