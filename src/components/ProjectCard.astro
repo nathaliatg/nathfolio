@@ -268,4 +268,24 @@ const ratio = card.fit === 'contain-full' && card.image ? card.image.width / car
       margin-top: calc(-1 * clamp(16px, 2.2vw, 34px));
     }
   }
+
+  /* Cards fade in as they scroll into view. Overrides the plain `rise`
+     animation-name while reusing its timeline and stagger ranges. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .card {
+        animation-name: card-in;
+      }
+    }
+  }
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--rise-distance));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>

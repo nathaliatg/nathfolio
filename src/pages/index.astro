@@ -53,31 +53,13 @@ const skills = [
     </h1>
 
     <p class="sub">
-      A developer who never stopped thinking like a designer; combining thoughtful interfaces with
+      A frontend developer who loves thinking like a designer; combining thoughtful interfaces with
       clean, purposeful code.
     </p>
 
     <div class="hero-foot">
-      <span>{site.location} — {site.year}</span>
-      <span class="role">
-        selected work
-        <svg class="hero-arrow" viewBox="0 0 24 40" aria-hidden="true">
-          <path
-            d="M12 2 C 18 11, 5 20, 11 34"
-            stroke="currentColor"
-            stroke-width="2"
-            fill="none"
-            stroke-linecap="round"
-          />
-          <path
-            d="M3 25 C 6 29, 8 32, 11 34 C 13 31, 16 28, 19 26"
-            stroke="currentColor"
-            stroke-width="2"
-            fill="none"
-            stroke-linecap="round"
-          />
-        </svg>
-      </span>
+      <span>{site.location} {site.year}</span>
+      <span class="role">selected work</span>
     </div>
   </section>
 
@@ -207,30 +189,6 @@ const skills = [
     font-weight: 500;
     font-size: 14px;
     color: var(--ink);
-  }
-
-  .hero-arrow {
-    position: absolute;
-    top: 100%;
-    right: 6px;
-    margin-top: 4px;
-    width: 18px;
-    height: 30px;
-    color: var(--mauve);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .hero-arrow path {
-      stroke-dasharray: 70;
-      animation: scribble-draw-v 0.8s 0.9s cubic-bezier(0.6, 0.05, 0.25, 1) both;
-    }
-  }
-  @keyframes scribble-draw-v {
-    from {
-      stroke-dashoffset: 70;
-    }
-    to {
-      stroke-dashoffset: 0;
-    }
   }
 
   @supports (animation-timeline: view()) {

@@ -66,7 +66,7 @@ export const projects: Project[] = [
       image: petmatchImg,
       fit: 'contain-full',
       bg: '#f6dee2',
-      cover: '#6B3450',
+      cover: '#1C194A',
       span: 7,
     },
     study: {
@@ -75,7 +75,7 @@ export const projects: Project[] = [
         'An adoption platform that treats matching as a real problem, not a photo gallery. Designed and built end to end: brand, interface and code.',
       meta: { role: 'Design & development', stack: 'HTML, CSS, JavaScript', type: 'Personal project' },
       links: {
-        live: '',
+        live: 'https://nathaliatg.github.io/petmatch/',
         repo: '',
       },
       hero: {
@@ -173,7 +173,7 @@ export const projects: Project[] = [
       image: safeImg,
       fit: 'contain',
       bg: '#1E4228',
-      cover: '#2A6FBF',
+      cover: '#21432A',
       revealInk: '#e8f2fd',
       span: 5,
     },
@@ -378,11 +378,11 @@ export const projects: Project[] = [
     card: {
       role: 'freelance · home-visit vet care',
       blurb:
-        "A brand and website for a friend's mobile veterinary service, designed and built as a freelance project, launching soon.",
+        "A brand and website for a mobile veterinary service, designed and built as a freelance project, launching soon.",
       image: petilioImg,
       fit: 'contain-full',
       bg: '#fbeaf3',
-      cover: '#B8327A',
+      cover: '#BB606C',
       revealInk: '#fce4f0',
       badge: { label: 'coming soon', tone: 'soon' },
       span: 6,

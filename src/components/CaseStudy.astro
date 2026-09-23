@@ -40,27 +40,11 @@ const { eyebrow, title, tagline, meta, links = {}, hero, blocks, next } = Astro.
       <div><span>role</span><strong>{meta.role}</strong></div>
       <div><span>stack</span><strong>{meta.stack}</strong></div>
       <div><span>type</span><strong>{meta.type}</strong></div>
-
-      <div class="links">
-        {
-          links.live && (
-            <a class="btn primary" href={links.live} target="_blank" rel="noopener noreferrer">
-              View live site <span aria-hidden="true">→</span>
-            </a>
-          )
-        }
-        {
-          links.repo && (
-            <a class="btn ghost" href={links.repo} target="_blank" rel="noopener noreferrer">
-              View code <span aria-hidden="true">→</span>
-            </a>
-          )
-        }
-      </div>
     </div>
   </section>
 
-  <div class="shot rise" style={`background:${hero?.bg ?? "var(--thumb-bg)"}`}>
+  <div class="hero-media">
+    <div class="shot rise" style={`background:${hero?.bg ?? "var(--thumb-bg)"}`}>
     {
       hero?.video ? (
         <video
@@ -89,6 +73,24 @@ const { eyebrow, title, tagline, meta, links = {}, hero, blocks, next } = Astro.
         />
       ) : (
         <p class="shot-fallback">{title}</p>
+      )
+    }
+    </div>
+
+    {
+      (links.live || links.repo) && (
+        <div class="links">
+          {links.live && (
+            <a class="btn primary" href={links.live} target="_blank" rel="noopener noreferrer">
+              View live site <span aria-hidden="true">→</span>
+            </a>
+          )}
+          {links.repo && (
+            <a class="btn ghost" href={links.repo} target="_blank" rel="noopener noreferrer">
+              View code <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </div>
       )
     }
   </div>
@@ -216,20 +218,12 @@ const { eyebrow, title, tagline, meta, links = {}, hero, blocks, next } = Astro.
     font-size: 15px;
   }
 
+  /* buttons sit under the hero media, aligned with its edge */
   .links {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
-    /* own row on mobile */
-    flex-basis: 100%;
-    margin-top: 8px;
-  }
-  @media (min-width: 860px) {
-    .links {
-      flex-basis: auto;
-      margin-top: 0;
-      margin-left: auto;
-    }
+    margin: 18px var(--pad-x) 0;
   }
   .btn {
     font-size: 13px;
@@ -256,7 +250,10 @@ const { eyebrow, title, tagline, meta, links = {}, hero, blocks, next } = Astro.
     align-items: center;
     justify-content: center;
     padding: clamp(32px, 6vh, 80px) clamp(20px, 5vw, 60px);
-    margin: 0 var(--pad-x) clamp(56px, 10vh, 120px);
+    margin: 0 var(--pad-x);
+  }
+  .hero-media {
+    margin-bottom: clamp(56px, 10vh, 120px);
   }
   .shot :global(video) {
     width: 100%;

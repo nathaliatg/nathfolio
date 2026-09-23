@@ -3,11 +3,11 @@ export const site = {
   mark: 'n.g.',
   role: 'front-end developer & visual designer',
   email: 'nathaliatgoncalves@gmail.com',
-  location: 'curitiba, br',
+  location: 'curitiba, brazil',
   year: 2026,
   description:
     'Front-end developer with a designer’s eye. I build interfaces that look as good as they work.',
-  footerNote: 'made with care (and a cat on the keyboard)',
+  footerNote: 'made with love (and a cat on the keyboard)',
   social: {
     // empty string hides the link
     github: 'https://github.com/nathaliatg',
